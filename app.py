@@ -153,6 +153,7 @@ if st.button("Cadastrar senha"):
             st.info(
                 "Sua senha será ativada em até **24 horas**, "
                 "após validação e registro no sistema."
+                "Em caso de dúvidas, entre em contato com luciano.reis@saude.ba.gov.br."
             )
 
         except Exception as e:
