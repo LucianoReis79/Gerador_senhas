@@ -20,7 +20,7 @@ if "ultimo_envio" not in st.session_state:
     st.session_state["ultimo_envio"] = 0
 
 
-# ---------- FUNÇÕES ----------
+# ---------------- FUNÇÕES ----------------
 
 def gerar_hash(senha):
     return hashlib.sha256(senha.encode()).hexdigest()
@@ -80,7 +80,7 @@ def avaliar_forca(senha):
     return score
 
 
-# ---------- CONTROLE DUPLICIDADE ----------
+# ----------- CONTROLE DUPLICIDADE -----------
 
 def verificar_solicitacao_recente(email, cpf):
 
@@ -118,6 +118,8 @@ def registrar_solicitacao(email, cpf):
 
         writer.writerow([email, cpf, datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
 
+
+# ----------- ENVIO EMAIL -----------
 
 def enviar_email(nome, email, cpf, telefone, hash_senha):
 
@@ -161,7 +163,7 @@ def enviar_email(nome, email, cpf, telefone, hash_senha):
         servidor.sendmail(remetente, destinatario, msg.as_string())
 
 
-# ---------- INTERFACE ----------
+# ---------------- INTERFACE ----------------
 
 st.title("🔐 Cadastro de Senha do Sistema")
 
@@ -178,8 +180,6 @@ telefone = st.text_input("Telefone")
 senha = st.text_input("Senha", type="password")
 senha_confirmacao = st.text_input("Confirmar senha", type="password")
 
-bot_check = st.text_input("Campo de verificação", label_visibility="collapsed")
-
 
 if st.button("Gerar senha segura"):
 
@@ -189,6 +189,8 @@ if st.button("Gerar senha segura"):
 
     st.info("Copie a senha gerada.")
 
+
+# ----------- FORÇA DA SENHA -----------
 
 if senha:
 
@@ -206,7 +208,7 @@ if senha:
         st.success("Senha forte")
 
 
-# ---------- VALIDAÇÕES ----------
+# ----------- VALIDAÇÕES -----------
 
 erros = []
 
@@ -233,7 +235,7 @@ if not telefone:
 if not senha:
     erros.append("Senha não informada")
 
-if senha and senha_confirmacao and senha != senha_confirmacao:
+if senha != senha_confirmacao:
     erros.append("As senhas não coincidem")
 
 
@@ -247,10 +249,6 @@ if erros:
 else:
 
     if st.button("Cadastrar senha"):
-
-        if bot_check:
-            st.error("Falha na verificação de segurança do formulário.")
-            st.stop()
 
         if verificar_solicitacao_recente(email_normalizado, cpf):
 
