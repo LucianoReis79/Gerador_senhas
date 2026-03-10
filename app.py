@@ -20,7 +20,19 @@ if "ultimo_envio" not in st.session_state:
     st.session_state["ultimo_envio"] = 0
 
 
-# ---------------- FUNÇÕES ----------------
+# ---------- LIMPAR FORMULÁRIO ----------
+
+def limpar_formulario():
+
+    st.session_state["nome"] = ""
+    st.session_state["email"] = ""
+    st.session_state["cpf"] = ""
+    st.session_state["telefone"] = ""
+    st.session_state["senha"] = ""
+    st.session_state["senha_confirmacao"] = ""
+
+
+# ---------- FUNÇÕES ----------
 
 def gerar_hash(senha):
     return hashlib.sha256(senha.encode()).hexdigest()
@@ -80,7 +92,7 @@ def avaliar_forca(senha):
     return score
 
 
-# ----------- CONTROLE DUPLICIDADE -----------
+# ---------- CONTROLE DUPLICIDADE ----------
 
 def verificar_solicitacao_recente(email, cpf):
 
@@ -119,7 +131,7 @@ def registrar_solicitacao(email, cpf):
         writer.writerow([email, cpf, datetime.now().strftime("%Y-%m-%d %H:%M:%S")])
 
 
-# ----------- ENVIO EMAIL -----------
+# ---------- ENVIO EMAIL ----------
 
 def enviar_email(nome, email, cpf, telefone, hash_senha):
 
@@ -160,10 +172,14 @@ def enviar_email(nome, email, cpf, telefone, hash_senha):
 
         servidor.login(remetente, senha_email)
 
-        servidor.sendmail(remetente, destinatario, msg.as_string())
+        servidor.sendmail(
+            remetente,
+            destinatario,
+            msg.as_string()
+        )
 
 
-# ---------------- INTERFACE ----------------
+# ---------- INTERFACE ----------
 
 st.title("🔐 Cadastro de Senha do Sistema")
 
@@ -172,13 +188,17 @@ st.write(
     "A senha será ativada em até 24 horas."
 )
 
-nome = st.text_input("Nome completo")
-email_usuario = st.text_input("E-mail")
-cpf = st.text_input("CPF")
-telefone = st.text_input("Telefone")
+nome = st.text_input("Nome completo", key="nome")
 
-senha = st.text_input("Senha", type="password")
-senha_confirmacao = st.text_input("Confirmar senha", type="password")
+email_usuario = st.text_input("E-mail", key="email")
+
+cpf = st.text_input("CPF", key="cpf")
+
+telefone = st.text_input("Telefone", key="telefone")
+
+senha = st.text_input("Senha", type="password", key="senha")
+
+senha_confirmacao = st.text_input("Confirmar senha", type="password", key="senha_confirmacao")
 
 
 if st.button("Gerar senha segura"):
@@ -189,8 +209,6 @@ if st.button("Gerar senha segura"):
 
     st.info("Copie a senha gerada.")
 
-
-# ----------- FORÇA DA SENHA -----------
 
 if senha:
 
@@ -208,7 +226,7 @@ if senha:
         st.success("Senha forte")
 
 
-# ----------- VALIDAÇÕES -----------
+# ---------- VALIDAÇÕES ----------
 
 erros = []
 
@@ -283,6 +301,10 @@ else:
                         "Sua senha será ativada em até **24 horas**, "
                         "após validação e registro no sistema."
                     )
+
+                    limpar_formulario()
+
+                    st.rerun()
 
                 except Exception as e:
 
