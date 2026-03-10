@@ -16,8 +16,14 @@ st.set_page_config(page_title="Cadastro de Senha", page_icon="🔐")
 
 ARQUIVO_CONTROLE = "solicitacoes_senha.csv"
 
+
+# ---------- CONTROLE SESSION ----------
+
 if "ultimo_envio" not in st.session_state:
     st.session_state["ultimo_envio"] = 0
+
+if "cadastro_realizado" not in st.session_state:
+    st.session_state["cadastro_realizado"] = False
 
 
 # ---------- LIMPAR FORMULÁRIO ----------
@@ -53,13 +59,10 @@ def gerar_senha_segura(tamanho=12):
 def validar_email(email):
 
     try:
-
         resultado = validate_email(email)
-
         return resultado.email
 
     except EmailNotValidError:
-
         return None
 
 
@@ -196,6 +199,14 @@ st.write(
     "A senha será ativada em até 24 horas."
 )
 
+if st.session_state["cadastro_realizado"]:
+
+    st.success("Senha cadastrada com sucesso.")
+    st.info("Sua senha será ativada em até 24 horas.")
+
+    st.session_state["cadastro_realizado"] = False
+
+
 nome = st.text_input("Nome completo", key="nome")
 
 email_usuario = st.text_input("E-mail", key="email")
@@ -303,12 +314,7 @@ else:
 
                     st.session_state["ultimo_envio"] = agora
 
-                    st.success("Senha cadastrada com sucesso.")
-
-                    st.info(
-                        "Sua senha será ativada em até **24 horas**, "
-                        "após validação e registro no sistema."
-                    )
+                    st.session_state["cadastro_realizado"] = True
 
                     limpar_formulario()
 
