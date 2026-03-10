@@ -24,12 +24,17 @@ if "ultimo_envio" not in st.session_state:
 
 def limpar_formulario():
 
-    st.session_state["nome"] = ""
-    st.session_state["email"] = ""
-    st.session_state["cpf"] = ""
-    st.session_state["telefone"] = ""
-    st.session_state["senha"] = ""
-    st.session_state["senha_confirmacao"] = ""
+    for campo in [
+        "nome",
+        "email",
+        "cpf",
+        "telefone",
+        "senha",
+        "senha_confirmacao"
+    ]:
+
+        if campo in st.session_state:
+            del st.session_state[campo]
 
 
 # ---------- FUNÇÕES ----------
@@ -39,15 +44,22 @@ def gerar_hash(senha):
 
 
 def gerar_senha_segura(tamanho=12):
+
     caracteres = string.ascii_letters + string.digits + "@#$%&*!"
+
     return ''.join(secrets.choice(caracteres) for _ in range(tamanho))
 
 
 def validar_email(email):
+
     try:
+
         resultado = validate_email(email)
+
         return resultado.email
+
     except EmailNotValidError:
+
         return None
 
 
@@ -172,11 +184,7 @@ def enviar_email(nome, email, cpf, telefone, hash_senha):
 
         servidor.login(remetente, senha_email)
 
-        servidor.sendmail(
-            remetente,
-            destinatario,
-            msg.as_string()
-        )
+        servidor.sendmail(remetente, destinatario, msg.as_string())
 
 
 # ---------- INTERFACE ----------
