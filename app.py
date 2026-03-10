@@ -4,20 +4,18 @@ import smtplib
 import secrets
 import string
 import re
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import os
 import time
 import csv
 from datetime import datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email_validator import validate_email, EmailNotValidError
-
 
 st.set_page_config(page_title="Cadastro de Senha", page_icon="🔐")
 
 ARQUIVO_CONTROLE = "solicitacoes_senha.csv"
 
-# ---------- CONTROLE ANTI-SPAM ----------
 if "ultimo_envio" not in st.session_state:
     st.session_state["ultimo_envio"] = 0
 
@@ -134,20 +132,18 @@ def enviar_email(nome, email, cpf, telefone, hash_senha):
     corpo_html = f"""
     <h2>Novo cadastro de senha</h2>
 
-    <b>Nome:</b> {nome}<br>
-    <b>Email:</b> {email}<br>
-    <b>CPF:</b> {cpf}<br>
-    <b>Telefone:</b> {telefone}<br><br>
+    Nome: {nome}<br>
+    Email: {email}<br>
+    CPF: {cpf}<br>
+    Telefone: {telefone}<br><br>
 
-    <b>Hash da senha:</b>
-
-    <p style="font-family:monospace">{hash_senha}</p>
+    Hash da senha:<br>
+    {hash_senha}
 
     <hr>
 
-    <b>Linha pronta para Excel:</b>
-
-    <p style="font-family:monospace">{linha_excel}</p>
+    Linha pronta para Excel:<br>
+    {linha_excel}
     """
 
     msg = MIMEMultipart()
@@ -162,11 +158,7 @@ def enviar_email(nome, email, cpf, telefone, hash_senha):
 
         servidor.login(remetente, senha_email)
 
-        servidor.sendmail(
-            remetente,
-            destinatario,
-            msg.as_string()
-        )
+        servidor.sendmail(remetente, destinatario, msg.as_string())
 
 
 # ---------- INTERFACE ----------
@@ -179,18 +171,15 @@ st.write(
 )
 
 nome = st.text_input("Nome completo")
-
 email_usuario = st.text_input("E-mail")
-
-cpf = st.text_input("CPF (somente números ou formatado)")
-
+cpf = st.text_input("CPF")
 telefone = st.text_input("Telefone")
 
 senha = st.text_input("Senha", type="password")
-
 senha_confirmacao = st.text_input("Confirmar senha", type="password")
 
-bot_check = st.text_input("Deixe este campo vazio", label_visibility="collapsed")
+bot_check = st.text_input("Campo de verificação", label_visibility="collapsed")
+
 
 if st.button("Gerar senha segura"):
 
@@ -217,28 +206,50 @@ if senha:
         st.success("Senha forte")
 
 
+# ---------- VALIDAÇÕES ----------
+
+erros = []
+
 email_normalizado = validar_email(email_usuario)
 
-cpf_valido = validar_cpf(cpf) if cpf else False
+if not nome:
+    erros.append("Nome não informado")
 
-senha_ok = senha and senha_confirmacao and senha == senha_confirmacao
+if not email_usuario:
+    erros.append("E-mail não informado")
 
-campos_ok = all([nome, email_usuario, cpf, telefone, senha, senha_confirmacao])
+elif email_normalizado is None:
+    erros.append("E-mail inválido")
 
-formulario_valido = all([
-    campos_ok,
-    email_normalizado is not None,
-    cpf_valido,
-    senha_ok
-])
+if not cpf:
+    erros.append("CPF não informado")
+
+elif not validar_cpf(cpf):
+    erros.append("CPF inválido")
+
+if not telefone:
+    erros.append("Telefone não informado")
+
+if not senha:
+    erros.append("Senha não informada")
+
+if senha and senha_confirmacao and senha != senha_confirmacao:
+    erros.append("As senhas não coincidem")
 
 
-if formulario_valido:
+if erros:
+
+    st.warning("Corrija os seguintes problemas:")
+
+    for e in erros:
+        st.write("•", e)
+
+else:
 
     if st.button("Cadastrar senha"):
 
         if bot_check:
-            st.error("Solicitação inválida.")
+            st.error("Falha na verificação de segurança do formulário.")
             st.stop()
 
         if verificar_solicitacao_recente(email_normalizado, cpf):
@@ -275,7 +286,3 @@ if formulario_valido:
                 except Exception as e:
 
                     st.error(f"Erro ao enviar email: {e}")
-
-else:
-
-    st.warning("Preencha corretamente todos os campos para habilitar o cadastro.")
