@@ -12,7 +12,34 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email_validator import validate_email, EmailNotValidError
 
-st.set_page_config(page_title="Cadastro de Senha", page_icon="🔐")
+st.set_page_config(page_title="Cadastro de Senha", page_icon="🔐", layout="centered")
+
+# ---------- CSS VISUAL PROFISSIONAL ----------
+
+st.markdown("""
+<style>
+
+.block-container{
+    max-width: 700px;
+}
+
+input {
+    border-radius: 6px !important;
+}
+
+.stButton>button {
+    width: 100%;
+    border-radius: 8px;
+    height: 42px;
+    font-weight: 600;
+}
+
+.stAlert {
+    border-radius: 8px;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 ARQUIVO_CONTROLE = "solicitacoes_senha.csv"
 
