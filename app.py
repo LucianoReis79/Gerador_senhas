@@ -11,7 +11,7 @@ import time
 import csv
 from datetime import datetime, timedelta
 from email_validator import validate_email, EmailNotValidError
-from streamlit_mask import st_masked_input
+
 
 st.set_page_config(page_title="Cadastro de Senha", page_icon="🔐")
 
@@ -182,9 +182,9 @@ nome = st.text_input("Nome completo")
 
 email_usuario = st.text_input("E-mail")
 
-cpf = st_masked_input("CPF", mask="999.999.999-99")
+cpf = st.text_input("CPF (somente números ou formatado)")
 
-telefone = st_masked_input("Telefone", mask="(99) 99999-9999")
+telefone = st.text_input("Telefone")
 
 senha = st.text_input("Senha", type="password")
 
