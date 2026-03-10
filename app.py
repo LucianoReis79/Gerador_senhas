@@ -200,7 +200,7 @@ st.title("🔐 Cadastro de Senha do Sistema")
 st.write(
     "Preencha os dados abaixo para cadastrar sua senha. "
     "A senha será ativada em até 24 horas."
-    "Em caso de dúvidas, envie uma mensagem para dasf.caj@saude,ba.gov.br."
+    
 )
 
 nome = st.text_input("Nome completo")
@@ -308,6 +308,7 @@ else:
 
                     st.success("Senha cadastrada com sucesso.")
                     st.info("Sua senha será ativada em até 24 horas.")
+                    st.info("Em caso de dúvidas, envie uma mensagem para dasf.caj@saude.ba.gov.br.")
 
                 except Exception as e:
 
