@@ -235,6 +235,9 @@ if not telefone:
 if not senha:
     erros.append("Senha não informada")
 
+elif len(senha) < 8:
+    erros.append("A senha deve ter pelo menos 8 caracteres")
+
 if senha != senha_confirmacao:
     erros.append("As senhas não coincidem")
 
